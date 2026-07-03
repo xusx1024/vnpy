@@ -1,3 +1,7 @@
+# 聚焦@dataclass机制和设计模式
+# __post_init__()方法：在dataclass对象初始化后执行的钩子函数，用于执行额外的初始化逻辑
+# 为什么不能直接在init里写？dataclass的__init__()方法是自动生成的，直接写会覆盖自动生成的初始化逻辑，导致dataclass的功能失效。
+
 """
 Basic data structure used for general trading function in the trading platform.
 """
@@ -23,6 +27,8 @@ class BaseData:
 
     gateway_name: str
 
+    # default = None, init = False: 该字段在初始化时不需要传入值，默认值为None，extra需要在对象创建后手动设置
+    # 类似于Android Intent的putExtra()
     extra: dict | None = field(default=None, init=False)
 
 
@@ -264,6 +270,7 @@ class ContractData(BaseData):
 @dataclass
 class QuoteData(BaseData):
     """
+    买一，卖一
     Quote data contains information for tracking lastest status
     of a specific quote.
     """
@@ -293,6 +300,7 @@ class QuoteData(BaseData):
         """
         return self.status in ACTIVE_STATUSES
 
+# 为什么返回值加了引号？因为CancelRequest类在代码中还没有定义，Python解释器会报错。加上引号后，解释器会把它当作字符串处理，等到类定义完成后再解析类型注解。
     def create_cancel_request(self) -> "CancelRequest":
         """
         Create cancel request object from quote.
